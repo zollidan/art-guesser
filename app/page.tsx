@@ -1,77 +1,51 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Image from "next/image";
+import Link from "next/link";
+import { useState, useEffect } from "react";
 
 export default function Home() {
-  const [data, setData] = useState();
-  const [imgNum, setImgNum] = useState(0);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [isVisible, setIsVisible] = useState(false);
+  // Указываем начальное значение для state
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState({ loading: true });
 
-  const fetchCatalog = async () => {
+  const fetchCategories = async () => {
     try {
-      const response = await fetch("/api");
-      const data = await response.json();
-      console.log(data);
-
-      setData(data);
+      const response = await fetch("/api/categories");
+      if (!response.ok) throw new Error(response.statusText); // Проверка статуса ответа
+      const categories = await response.json();
+      setData(categories);
     } catch (error) {
-      console.error("Failed to fetch images!", error);
+      console.error("Failed to fetch categories!", error);
     } finally {
-      setIsLoading(false);
+      setIsLoading({ loading: false }); // Устанавливаем состояние загрузки в false
     }
   };
 
   useEffect(() => {
-    fetchCatalog();
-  }, []);
+    fetchCategories(); // Вызываем функцию при монтировании компонента
+  }, []); // Пустой массив зависимостей означает, что эффект выполнится только один раз
 
-  function handleClick() {
-    setImgNum((prevImgNum) => (prevImgNum + 1) % data.length); // Зацикливание
-    setIsVisible(false);
-  }
-
-  function showAuthor() {
-    setIsVisible(true);
+  if (isLoading.loading) {
+    return <div>Загрузка...</div>; // Отображаем индикатор загрузки
   }
 
   return (
     <div className="flex flex-col items-center my-10">
-      <div>
-        {imgNum + 1}/{data && data.length}
-      </div>
-
-      {data ? (
-        <div className="mb-4">
-          <Image
-            src={data && data[imgNum].url} // URL изображения
-            alt={`Image ${imgNum}`}
-            width={600}
-            height={400}
-            className="rounded shadow-lg"
-          />
-
-          {isVisible && <p>{data && data[imgNum].name}</p>}
-        </div>
+      {data.length > 0 ? (
+        data.map((category) => (
+          <Link
+            className="my-4 cursor-pointer transition-all bg-blue-500 text-white px-6 py-2 rounded-lg
+          border-blue-600
+          border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px]
+          active:border-b-[2px] active:brightness-90 active:translate-y-[2px]"
+            href={`/${category.id}`}
+          >
+            {category.name}
+          </Link>
+        ))
       ) : (
-        <div>Изображение недоступно</div>
+        <p>Нет категорий</p>
       )}
-
-      <div>
-        <button
-          onClick={handleClick}
-          className="mx-1 bg-blue-500 hover:bg-blue-700 rounded text-white font-bold px-4 py-2"
-        >
-          Следующее изображение
-        </button>
-        <button
-          onClick={showAuthor}
-          className="bg-blue-500 hover:bg-blue-700 rounded text-white font-bold px-4 py-2"
-        >
-          Показать автора
-        </button>
-      </div>
     </div>
   );
 }

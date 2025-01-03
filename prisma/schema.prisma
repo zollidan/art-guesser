@@ -13,4 +13,12 @@ model Images {
   id    Int     @id @default(autoincrement())
   name String?
   url  String
+  categoryId Int
+  category Categories @relation(fields: [categoryId], references: [id])
+}
+
+model Categories {
+  id Int @id @default(autoincrement())
+  name String
+  images Images[]
 }
