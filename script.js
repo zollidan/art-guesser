@@ -6,25 +6,24 @@ let loadedGalleries = [];
 
 // Список файлов для загрузки
 const GALLERY_FILES = [
-  "./images/abstract.json",
-  "./images/cubism.json",
-  "./images/dadaism.json",
-  "./images/express.json",
-  "./images/expressionsn.json",
-  "./images/fovism.json",
-  "./images/futurism.json",
-  "./images/ive.json",
-  "./images/kandinski.json",
-  "./images/kokosha.json",
-  "./images/metaphis.json",
-  "./images/mex.json",
-  "./images/orphism.json",
-  "./images/parisschool.json",
-  "./images/popart.json",
-  "./images/rajionalism.json",
-  "./images/sachlichkeit.json",
-  "./images/tashism.json",
-  // Добавьте здесь другие файлы
+  "vk_json/300948505.json",
+  "vk_json/300948519.json",
+  "vk_json/300948642.json",
+  "vk_json/300954508.json",
+  "vk_json/300981842.json",
+  "vk_json/301279335.json",
+  "vk_json/302320260.json",
+  "vk_json/302320264.json",
+  "vk_json/302320281.json",
+  "vk_json/302320284.json",
+  "vk_json/302320286.json",
+  "vk_json/302320294.json",
+  "vk_json/302320311.json",
+  "vk_json/302320347.json",
+  "vk_json/302489777.json",
+  "vk_json/302553761.json",
+  "vk_json/302555857.json",
+  "vk_json/302564376.json",
 ];
 
 async function loadJSON(url) {
