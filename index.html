@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Multi-Gallery Photo Viewer</title>
+    <script src="script.js" defer></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        padding: 20px;
+        background-color: #f0f0f0;
+      }
+
+      .image-wrapper {
+        position: relative;
+        display: inline-block;
+        margin: 20px auto;
+      }
+
+      #main-image {
+        max-width: 90%;
+        max-height: 70vh;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        display: block;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+      }
+
+      #main-image:hover {
+        transform: scale(1.02);
+      }
+
+      .controls {
+        margin: 20px 0;
+      }
+
+      button {
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        margin: 0 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s ease;
+      }
+
+      button:hover {
+        background-color: #45a049;
+      }
+
+      button:disabled {
+        background-color: #cccccc;
+        cursor: not-allowed;
+      }
+
+      #random-btn {
+        background-color: #ff6b6b;
+      }
+
+      #random-btn:hover {
+        background-color: #ff5252;
+      }
+
+      #toggle-mode-btn {
+        background-color: #4ecdc4;
+      }
+
+      #toggle-mode-btn:hover {
+        background-color: #26a69a;
+      }
+
+      .photo-info {
+        margin: 10px 0;
+        font-size: 18px;
+        color: #333;
+      }
+
+      .loading {
+        font-size: 18px;
+        color: #666;
+      }
+
+      .mode-indicator {
+        display: inline-block;
+        padding: 5px 10px;
+        margin: 10px 0;
+        border-radius: 15px;
+        font-size: 14px;
+        font-weight: bold;
+      }
+
+      .mode-sequential {
+        background-color: #e8f5e8;
+        color: #2e7d32;
+      }
+
+      .mode-random {
+        background-color: #ffeaa7;
+        color: #d63031;
+      }
+
+      /* Gallery Selector Styles */
+      .gallery-selector {
+        margin: 15px 0;
+        padding: 10px;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .gallery-selector label {
+        font-weight: bold;
+        margin-right: 10px;
+        color: #333;
+      }
+
+      #gallery-select {
+        padding: 8px 12px;
+        font-size: 16px;
+        border: 2px solid #ddd;
+        border-radius: 5px;
+        background-color: white;
+        cursor: pointer;
+        min-width: 200px;
+      }
+
+      #gallery-select:focus {
+        outline: none;
+        border-color: #4caf50;
+      }
+
+      /* Hotkeys Info */
+      .hotkeys-info {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        background-color: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+        font-size: 12px;
+        opacity: 0.7;
+        transition: opacity 0.3s;
+      }
+
+      .hotkeys-info:hover {
+        opacity: 1;
+      }
+
+      .hotkeys-info h4 {
+        margin: 0 0 5px 0;
+        font-size: 14px;
+      }
+
+      .hotkeys-info div {
+        margin: 2px 0;
+      }
+
+      /* Tooltip Styles */
+      .tooltip {
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.9);
+        color: white;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 14px;
+        white-space: nowrap;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        z-index: 1000;
+        pointer-events: none;
+        max-width: 300px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+
+      .tooltip.long-text {
+        white-space: normal;
+        max-width: 400px;
+      }
+
+      .image-wrapper:hover .tooltip {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(-50%) translateY(-5px);
+      }
+
+      .tooltip::before {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: rgba(0, 0, 0, 0.9) transparent transparent transparent;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Multi-Gallery Photo Viewer</h1>
+
+    <!-- Hotkeys Info -->
+    <div class="hotkeys-info">
+      <h4>🎮 Горячие клавиши:</h4>
+      <div>← → A D: Навигация</div>
+      <div>Space, R: Случайное фото</div>
+      <div>M: Сменить режим</div>
+      <div>1-9: Выбор галереи</div>
+      <div>1: Все галереи</div>
+    </div>
+
+    <div class="loading" id="loading">Загрузка галерей...</div>
+
+    <!-- Gallery Selector -->
+    <div class="gallery-selector" id="gallery-selector" style="display: none">
+      <label for="gallery-select">📂 Выберите галерею:</label>
+      <select id="gallery-select">
+        <option value="all">Все галереи</option>
+      </select>
+    </div>
+
+    <div class="photo-info" id="photo-info" style="display: none"></div>
+    <div class="mode-indicator" id="mode-indicator" style="display: none">
+      Режим: Последовательный
+    </div>
+
+    <div class="image-wrapper" id="image-container" style="display: none">
+      <img src="" alt="" id="main-image" />
+      <div class="tooltip" id="tooltip">Загрузка...</div>
+    </div>
+
+    <div class="controls" id="controls" style="display: none">
+      <button id="prev-btn">← Предыдущая</button>
+      <button id="random-btn">🎲 Случайная</button>
+      <button id="next-btn">Следующая →</button>
+      <br /><br />
+      <button id="toggle-mode-btn">Переключить режим</button>
+    </div>
+  </body>
+</html>
